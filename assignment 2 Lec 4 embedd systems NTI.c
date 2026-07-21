@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-// Two-operand functions
+
 int add(int a, int b)
 {
     return a + b;
@@ -41,7 +41,7 @@ int remainder(int a, int b)
     return a % b;
 }
 
-// One-operand functions
+
 int Not(int a)
 {
     return ~a;
