@@ -14,7 +14,7 @@ int main()
     printf("q: %p, *q: %d\n", (void*)q, *q);
     printf("r: %p, *r: %d\n", (void*)r, *r);
 
-    // Swap pointers: p -> y, q -> z, r -> x
+    
     int *temp = p;
     p = q;
     q = r;
