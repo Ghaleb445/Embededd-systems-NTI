@@ -1,0 +1,172 @@
+#define F_CPU 8000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+
+#include "LCD.h"
+#include "Keypad.h"
+#include "DIO.h"
+
+long num1 = 0;
+long num2 = 0;
+long result = 0;
+
+char op = 0;
+char key;
+
+unsigned char secondNumber = 0;
+
+int main(void)
+{
+	LCD_Init();
+	Keypad_Init();
+
+	LCD_Clear();
+	LCD_String("Calculator");
+
+	_delay_ms(1000);
+
+	LCD_Clear();
+
+	while(1)
+	{
+		key = Keypad_GetKey();
+
+		
+		if(key >= '0' && key <= '9')
+		{
+			LCD_Char(key);
+
+			if(secondNumber == 0)
+			{
+				num1 = (num1 * 10) + (key - '0');
+			}
+			else
+			{
+				num2 = (num2 * 10) + (key - '0');
+			}
+		}
+
+		
+		else if(key=='+' || key=='-' || key=='*' || key=='/')
+		{
+			if(op == 0)
+			{
+				op = key;
+				secondNumber = 1;
+				LCD_Char(op);
+			}
+			else
+			{
+				switch(op)
+				{
+					case '+':
+					num1 = num1 + num2;
+					break;
+
+					case '-':
+					num1 = num1 - num2;
+					break;
+
+					case '*':
+					num1 = num1 * num2;
+					break;
+
+					case '/':
+					if(num2 == 0)
+					{
+						LCD_Clear();
+						LCD_String("Math Error");
+						_delay_ms(1500);
+
+						LCD_Clear();
+
+						num1 = 0;
+						num2 = 0;
+						op = 0;
+						secondNumber = 0;
+
+						continue;
+					}
+
+					num1 = num1 / num2;
+					break;
+				}
+
+				num2 = 0;
+
+				op = key;
+
+				LCD_Clear();
+
+				LCD_Number(num1);
+
+				LCD_Char(op);
+			}
+		}
+
+		
+		else if(key == '=')
+		{
+			switch(op)
+			{
+				case '+':
+				result = num1 + num2;
+				break;
+
+				case '-':
+				result = num1 - num2;
+				break;
+
+				case '*':
+				result = num1 * num2;
+				break;
+
+				case '/':
+				if(num2 == 0)
+				{
+					LCD_Clear();
+					LCD_String("Math Error");
+					_delay_ms(1500);
+
+					LCD_Clear();
+
+					num1 = 0;
+					num2 = 0;
+					op = 0;
+					secondNumber = 0;
+
+					continue;
+				}
+
+				result = num1 / num2;
+				break;
+			}
+
+			LCD_Clear();
+
+			LCD_String("Result:");
+
+			LCD_Goto(1,0);
+
+			LCD_Number(result);
+
+			num1 = result;
+			num2 = 0;
+			op = 0;
+			secondNumber = 0;
+		}
+
+		
+		else if(key == 'C')
+		{
+			LCD_Clear();
+
+			num1 = 0;
+			num2 = 0;
+			result = 0;
+			op = 0;
+			secondNumber = 0;
+		}
+	}
+}
